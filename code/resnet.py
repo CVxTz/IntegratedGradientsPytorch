@@ -1,15 +1,14 @@
 import torch
-import urllib
 from PIL import Image
 from torchvision import transforms
-from imagenet import mapping
+from code.imagenet import mapping
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import numpy as np
 import cv2
 
-filename_x = "cat.jpg"
-filename_blank = "blank.png"
+filename_x = "../input/cat_2.jpg"
+filename_blank = "../input/blank.png"
 
 model = torch.hub.load('pytorch/vision:v0.6.0', 'resnet18', pretrained=True)
 
@@ -57,7 +56,7 @@ with torch.no_grad():
 
 n = 100
 mean_grad = 0
-idx = 281
+idx = 281  # tabby cat class
 
 for i in tqdm(range(1, n + 1)):
     x = input_batch_blank + i/n * (input_batch_x - input_batch_blank)

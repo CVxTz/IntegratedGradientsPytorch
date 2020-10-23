@@ -1,4 +1,3 @@
-import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -79,8 +78,12 @@ def compute_integrated_gradient(batch_x, batch_blank, model, idx):
     return integrated_gradients
 
 
-def plot_images(images, titles, output_path, n=2):
-    fig, axs = plt.subplots(1, n)
+def plot_images(
+    images,
+    titles,
+    output_path,
+):
+    fig, axs = plt.subplots(1, len(images))
 
     fig.set_figheight(10)
     fig.set_figwidth(16)
@@ -131,7 +134,7 @@ if __name__ == "__main__":
     batch_x = batch_x.permute(0, 2, 3, 1)
     resized_batch_x = resized_batch_x.permute(0, 2, 3, 1)
 
-    # Squeeze + move to cpû
+    # Squeeze + move to cpu
 
     np_integrated_gradients = integrated_gradients[0, :, :, :].cpu().data.numpy()
 

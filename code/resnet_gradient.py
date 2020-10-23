@@ -3,33 +3,47 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from PIL import Image
-from imagenet_mapping import mapping
 from torchvision import transforms
 from tqdm import tqdm
+import json
+from pathlib import Path
+import os
 
 
-def get_model(model_name='resnet18'):
-    model = torch.hub.load('pytorch/vision:v0.6.0', model_name, pretrained=True)
+def get_mapping():
+    with open(Path(os.path.abspath(__file__)).parent / "mapping.json", "r") as f:
+        mapping = json.load(f)
+
+    mapping = {int(k): v for k, v in mapping.items()}
+    return mapping
+
+
+def get_model(model_name="resnet18"):
+    model = torch.hub.load("pytorch/vision:v0.6.0", model_name, pretrained=True)
     if torch.cuda.is_available():
-        model.to('cuda')
+        model.to("cuda")
 
     model.eval()
     return model
 
 
 def get_transformations():
-    preprocess = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ])
+    preprocess = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
 
-    resize = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-    ])
+    resize = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+        ]
+    )
 
     return preprocess, resize
 
@@ -45,7 +59,7 @@ def predict_sample(batch, model):
 
 def move_to_device(batch):
     if torch.cuda.is_available():
-        batch = batch.to('cuda')
+        batch = batch.to("cuda")
     return batch
 
 
@@ -57,7 +71,7 @@ def compute_integrated_gradient(batch_x, batch_blank, model, idx):
         x = batch_blank + i / n * (batch_x - batch_blank)
         x.requires_grad = True
         y = model(x)[0, idx]
-        grad, = torch.autograd.grad(y, x)
+        (grad,) = torch.autograd.grad(y, x)
         mean_grad += grad / n
 
     integrated_gradients = (batch_x - batch_blank) * mean_grad
@@ -74,7 +88,7 @@ def plot_images(images, titles, output_path, n=2):
     for i, (title, img) in enumerate(zip(titles, images)):
         axs[i].imshow(img)
         axs[i].set_title(title)
-        axs[i].axis('off')
+        axs[i].axis("off")
 
     fig.tight_layout()
     plt.savefig(output_path)
@@ -83,14 +97,15 @@ def plot_images(images, titles, output_path, n=2):
 if __name__ == "__main__":
     filename_x = "../input/cat_1.jpg"
     filename_blank = "../input/blank.png"
+    mapping = get_mapping()
 
     idx = 281  # tabby cat class
 
     model = get_model()
 
     # Read images
-    input_image_x = Image.open(filename_x).convert('RGB')
-    input_image_blank = Image.open(filename_blank).convert('RGB')
+    input_image_x = Image.open(filename_x).convert("RGB")
+    input_image_blank = Image.open(filename_blank).convert("RGB")
 
     preprocess, resize = get_transformations()
 
@@ -131,6 +146,6 @@ if __name__ == "__main__":
     # Overlay integrated gradient with image
 
     images = [resized_x, np_integrated_gradients]
-    titles = ['Tabby Cat', 'Integrated Gradient']
+    titles = ["Tabby Cat", "Integrated Gradient"]
 
     plot_images(images, titles, "../output/" + filename_x.split("/")[-1])

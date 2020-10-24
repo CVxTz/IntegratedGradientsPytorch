@@ -122,12 +122,12 @@ def compute_integrated_gradient(batch_x, batch_blank, model):
 def plot_importance(arrays, titles, output_path):
     fig, axs = plt.subplots(1, len(arrays))
 
-    fig.set_figheight(10)
-    fig.set_figwidth(16)
+    fig.set_figheight(7)
+    fig.set_figwidth(10)
 
     for i, ((title1, title2), (array1, array2)) in enumerate(zip(titles, arrays)):
-        axs[i].scatter(range(len(array1)), array1, label=title1, s=6)
-        axs[i].scatter(range(len(array2)), array2, label=title2, s=6)
+        axs[i].scatter(range(len(array1)), array1, label=title1, s=6, marker="+")
+        axs[i].scatter(range(len(array2)), array2, label=title2, s=6, marker="v")
         axs[i].legend()
         axs[i].set_xlabel('Feature #')
 
@@ -168,11 +168,11 @@ if __name__ == "__main__":
         logger=logger,
     )
 
-    # trainer.fit(model, train_loader, val_loader)
-    #
-    # trainer.test(test_dataloaders=test_loader)
-    #
-    # torch.save(model.state_dict(), "../output/model.pth")
+    trainer.fit(model, train_loader, val_loader)
+
+    trainer.test(test_dataloaders=test_loader)
+
+    torch.save(model.state_dict(), "../output/model.pth")
 
     model.load_state_dict(torch.load("../output/model.pth"))
 

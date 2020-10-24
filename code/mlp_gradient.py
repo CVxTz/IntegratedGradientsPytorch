@@ -125,10 +125,12 @@ def plot_importance(arrays, titles, output_path):
     fig.set_figheight(10)
     fig.set_figwidth(16)
 
-    for i, (title, array) in enumerate(zip(titles, arrays)):
-        axs[i].scatter(range(len(array)), array)
-        axs[i].set_title(title)
-        # axs[i].axis("off")
+    for i, ((title1, title2), (array1, array2)) in enumerate(zip(titles, arrays)):
+        axs[i].scatter(range(len(array1)), array1, label=title1, s=6)
+        axs[i].scatter(range(len(array2)), array2, label=title2, s=6)
+        axs[i].legend()
+        axs[i].set_xlabel('Feature #')
+
     fig.tight_layout()
     plt.savefig(output_path)
 
@@ -166,11 +168,11 @@ if __name__ == "__main__":
         logger=logger,
     )
 
-    trainer.fit(model, train_loader, val_loader)
-
-    trainer.test(test_dataloaders=test_loader)
-
-    torch.save(model.state_dict(), "../output/model.pth")
+    # trainer.fit(model, train_loader, val_loader)
+    #
+    # trainer.test(test_dataloaders=test_loader)
+    #
+    # torch.save(model.state_dict(), "../output/model.pth")
 
     model.load_state_dict(torch.load("../output/model.pth"))
 
@@ -194,11 +196,12 @@ if __name__ == "__main__":
 
     true_influence = np.array(coefs) * (x.squeeze() - x_b.squeeze())
 
-    arrays = [coefs, true_influence, mean_grad.tolist(), integrated_gradient.tolist()]
+    arrays = [
+        [coefs, mean_grad.tolist()],
+        [true_influence, integrated_gradient.tolist()],
+    ]
     titles = [
-        "True Influence / (x - x')",
-        "True Influence",
-        "Integrated Gradients / (x - x')",
-        "Integrated Gradients",
+        ["True Contribution / (x - x')", "Integrated Gradients / (x - x')"],
+        ["True Contribution", "Integrated Gradients"],
     ]
     plot_importance(arrays, titles, "../output/mlp_integrated_gradient.png")

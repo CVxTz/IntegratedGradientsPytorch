@@ -201,7 +201,7 @@ if __name__ == "__main__":
         [true_influence, integrated_gradient.tolist()],
     ]
     titles = [
-        ["True Contribution / (x - x')", "Integrated Gradients / (x - x')"],
-        ["True Contribution", "Integrated Gradients"],
+        ["True Attribution / (x - x')", "Integrated Gradients / (x - x')"],
+        ["True Attribution", "Integrated Gradients"],
     ]
     plot_importance(arrays, titles, "../output/mlp_integrated_gradient.png")

@@ -47,7 +47,7 @@ of a cause, and its output by the neural network should be close to zero.
 The integrated gradients method is computed as follows:
 
 ![](https://cdn-images-1.medium.com/max/800/1*vahMPznkO0WHSt0xAYiLzg.png)
-<span class="figcaption_hack">image by author</span>
+
 
 Where x_i is the i-th feature of the vector x.
 

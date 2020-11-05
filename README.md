@@ -1,8 +1,6 @@
-### How much of your Neural Network’s Prediction can be Attributed to each Input
-Feature?
+### How much of your Neural Network’s Prediction can be Attributed to each Input Feature?
 
-#### Peeking inside Deep Neural Networks with Integrated Gradients, Implemented in
-PyTorch.
+#### Peeking inside Deep Neural Networks with Integrated Gradients, Implemented in PyTorch.
 
 Neural networks are known to be black box predictors where the data scientist
 does not usually know which particular input feature influenced the prediction
